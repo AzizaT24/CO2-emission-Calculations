@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from datetime import date
+
+co2_data = pd.read_excel('Co2_distances_2020.xlsx',index_col= False)
+
+
+
+conditions_factor= [
+   (co2_data['Transportation mode']=='Air'), 
+   (co2_data['Transportation mode']== 'Road'),
+   (co2_data['Transportation mode']== 'Rail'),
+   (co2_data['Transportation mode'] == 'Sea')]
+choices_factor = [1.01,0.096,0.028,0.012]
+co2_data ['Emission Factor'] = np.select(conditions_factor, choices_factor, default= 'Not enough data')
+
+co2_data ['Co2 emission/kgCO2eq'] = co2_data['Gross weight kg'].astype(float)/1000 * co2_data ['Emission Factor'].astype(float)  * co2_data ['Distance'].astype(float) 
+
+co2_data.to_excel("Co2_update.xlsx",sheet_name='Sheet_name_1',index=None)
